@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Microsoft.Win32;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace SpeechTrainer
 {
@@ -157,7 +157,10 @@ namespace SpeechTrainer
                     if (key == "app" && value.Length > 0)
                         _appName = value;
                     // The id becomes a folder name, so anything else keeps the default.
-                    else if (key == "id" && System.Text.RegularExpressions.Regex.IsMatch(value, "^[a-z0-9_-]+$"))
+                    else if (
+                        key == "id"
+                        && System.Text.RegularExpressions.Regex.IsMatch(value, "^[a-z0-9_-]+$")
+                    )
                         _appId = value;
                 }
             }

@@ -9,6 +9,7 @@ using VoiceSidecar;
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const float CONFIDENCE_THRESHOLD = 0.85f;
+
 // Bumped only on breaking changes to the stdout JSON or the grammar contract
 const int PROTOCOL = 1;
 var confidenceThreshold = CONFIDENCE_THRESHOLD;
@@ -29,8 +30,12 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 // Set from the release tag by CI, so user logs show which engine build they run
 var engineVersion =
-    System.Reflection.Assembly.GetEntryAssembly()
-        ?.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+    System
+        .Reflection.Assembly.GetEntryAssembly()
+        ?.GetCustomAttributes(
+            typeof(System.Reflection.AssemblyInformationalVersionAttribute),
+            false
+        )
         .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
         .FirstOrDefault()
         ?.InformationalVersion.Split('+')[0]
@@ -118,7 +123,8 @@ engine.LoadGrammar(grammar);
 
 engine.SpeechRecognized += (sender, e) =>
 {
-    if (muted) return;
+    if (muted)
+        return;
 
     if (e.Result.Confidence < confidenceThreshold)
     {
@@ -156,8 +162,7 @@ engine.SpeechRecognized += (sender, e) =>
     EmitSpeech(command, e.Result.Confidence);
 };
 
-engine.SpeechRecognitionRejected += (sender, e) =>
-{
+engine.SpeechRecognitionRejected += (sender, e) => {
     // Heard something but confidence was too low even
 };
 

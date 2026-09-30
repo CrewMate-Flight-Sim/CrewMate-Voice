@@ -27,8 +27,7 @@ To try a local build in an aircraft app, set `CREWMATE_VOICE_DIST` to this repo'
 
 ## Releasing
 
-1. Add the version to `CHANGELOG.md`.
-2. Push a `vX.Y.Z` tag. CI builds both projects with that version and publishes a release with the two exes and `SHA256SUMS`.
+Push a `vX.Y.Z` tag after updating `CHANGELOG.md`. CI builds both projects with that version and publishes a release with the two exes and `SHA256SUMS`. The full steps, the versioning rules and how to test a build in an app are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Sidecar contract
 

@@ -14,7 +14,9 @@ namespace VoiceSidecar
         {
             return actionRuleId switch
             {
-                "FO_COMMANDS" => int.TryParse(cmdId, out var pid) ? DispatchFo(pid, cmdValue, rawText) : null,
+                "FO_COMMANDS" => int.TryParse(cmdId, out var pid)
+                    ? DispatchFo(pid, cmdValue, rawText)
+                    : null,
                 "FMA_CALLOUTS" => DispatchFma(cmdValue, rawText),
                 "DISCRETE_COMMANDS" => DispatchDiscrete(cmdId, rawText),
                 _ => null,
@@ -246,7 +248,7 @@ namespace VoiceSidecar
             var payload = new Dictionary<string, object>
             {
                 ["runway"] = identifier + designator,
-                ["identifier"] = identifier
+                ["identifier"] = identifier,
             };
 
             if (!string.IsNullOrEmpty(designator))
@@ -286,6 +288,7 @@ namespace VoiceSidecar
 
             return Cmd("takeoff_data", raw, payload);
         }
+
         private static VoiceCommand DispatchFma(string cval, string raw)
         {
             var payload = new Dictionary<string, object>();
@@ -322,7 +325,9 @@ namespace VoiceSidecar
 
         // ─── DISCRETE_COMMANDS ────────────────────────────────────────────────────
 
-        private static readonly System.Text.RegularExpressions.Regex SnakeCase = new("^[a-z][a-z0-9_]*$");
+        private static readonly System.Text.RegularExpressions.Regex SnakeCase = new(
+            "^[a-z][a-z0-9_]*$"
+        );
 
         private static VoiceCommand? DispatchDiscrete(string cmdId, string raw)
         {
