@@ -14,6 +14,11 @@ namespace SpeechTrainer
     {
         private const int BatchSize = 20;
         private const string LogFileName = "speech-trainer.log";
+        private const string PhraseFileName = "training_phrases.txt";
+
+        // Overridden by "#! app:" and "#! id:" lines in the phrase file, so one exe serves every aircraft.
+        private static string _appName = "CrewMate";
+        private static string _appId = "crewmate";
 
         // What a missing speech profile surfaces as.
         private const int E_INVALIDARG = unchecked((int)0x80070057);
@@ -39,6 +44,7 @@ namespace SpeechTrainer
 
         public MainForm()
         {
+            ReadDirectives();
             BuildUi();
             Load += OnLoad;
         }
@@ -52,7 +58,7 @@ namespace SpeechTrainer
                 if (string.IsNullOrWhiteSpace(dir))
                     dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-                dir = Path.Combine(dir, "crewmatea350");
+                dir = Path.Combine(dir, _appId);
                 Directory.CreateDirectory(dir);
                 return Path.Combine(dir, LogFileName);
             }
@@ -129,11 +135,44 @@ namespace SpeechTrainer
                 + GetLogFilePath();
         }
 
+        private static string PhrasePath =>
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PhraseFileName);
+
+        private static void ReadDirectives()
+        {
+            try
+            {
+                if (!File.Exists(PhrasePath))
+                    return;
+
+                foreach (var raw in File.ReadLines(PhrasePath))
+                {
+                    var line = raw.Trim();
+                    var sep = line.IndexOf(':');
+                    if (!line.StartsWith("#!") || sep < 0)
+                        continue;
+
+                    var key = line.Substring(2, sep - 2).Trim().ToLowerInvariant();
+                    var value = line.Substring(sep + 1).Trim();
+                    if (key == "app" && value.Length > 0)
+                        _appName = value;
+                    // The id becomes a folder name, so anything else keeps the default.
+                    else if (key == "id" && System.Text.RegularExpressions.Regex.IsMatch(value, "^[a-z0-9_-]+$"))
+                        _appId = value;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fall back to the defaults rather than refuse to start.
+                Log("Could not read directives from " + PhraseFileName, ex);
+            }
+        }
+
         // ── UI ────────────────────────────────────────────────────────────────────
 
         private void BuildUi()
         {
-            Text = "CrewMate A350 — Speech Training";
+            Text = _appName + " — Speech Training";
             ClientSize = new Size(420, 130);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
@@ -190,10 +229,7 @@ namespace SpeechTrainer
                 return;
             }
 
-            var phrasePath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "training_phrases.txt"
-            );
+            var phrasePath = PhrasePath;
 
             if (!File.Exists(phrasePath))
             {
@@ -270,7 +306,7 @@ namespace SpeechTrainer
         private void OnStartClick(object sender, EventArgs e)
         {
             _btnStart.Enabled = false;
-            const string title = "CrewMate A350 — Voice Training";
+            var title = _appName + " — Voice Training";
 
             try
             {

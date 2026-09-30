@@ -1,0 +1,49 @@
+name: build
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $ref = "${{ github.ref_name }}"
+          $version = if ("${{ github.ref_type }}" -eq "tag") { $ref.TrimStart("v") } else { "0.0.0-ci" }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Build
+        shell: pwsh
+        run: ./Scripts/build.ps1 -Version ${{ steps.version.outputs.value }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crewmate-voice-${{ steps.version.outputs.value }}
+          path: dist/*
+
+      # Aircraft repos download these by tag, so a tag's assets are never replaced or deleted
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" dist/* `
+            --title "${{ github.ref_name }}" `
+            --notes "See CHANGELOG.md."

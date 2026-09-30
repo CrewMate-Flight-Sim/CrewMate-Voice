@@ -10,20 +10,13 @@
     <Description>Voice Engine for CrewMate</Description>
     <Product>CrewMate</Product>
     <Company>CrewMate</Company>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <InformationalVersion>1.0.0</InformationalVersion>
+    <!-- CI passes -p:Version from the v* tag; local builds report 0.0.0-dev -->
+    <Version>0.0.0-dev</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Speech" Version="10.0.12" />
     <PackageReference Include="NAudio" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="grammar.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 </Project>

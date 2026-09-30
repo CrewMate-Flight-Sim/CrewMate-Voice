@@ -9,6 +9,8 @@ using VoiceSidecar;
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const float CONFIDENCE_THRESHOLD = 0.85f;
+// Bumped only on breaking changes to the stdout JSON or the grammar contract
+const int PROTOCOL = 1;
 var confidenceThreshold = CONFIDENCE_THRESHOLD;
 var muted = false;
 
@@ -25,7 +27,16 @@ var inputDeviceName = args.Length > 1 ? args[1] : "";
 // Flush stdout immediately — Tauri reads line by line
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-EmitStatus("starting");
+// Set from the release tag by CI, so user logs show which engine build they run
+var engineVersion =
+    System.Reflection.Assembly.GetEntryAssembly()
+        ?.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+        .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
+        .FirstOrDefault()
+        ?.InformationalVersion.Split('+')[0]
+    ?? "unknown";
+
+EmitStatus("starting", new { engineVersion, protocol = PROTOCOL });
 
 if (!File.Exists(GRAMMAR_FILE))
 {
