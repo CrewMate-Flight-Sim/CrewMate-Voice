@@ -17,7 +17,7 @@ dotnet tool restore            # csharpier, the C# formatter
 
 ## Making a change
 
-1. Branch from `main`.
+1. Branch from `main`. `main` is protected: every change, including the maintainers', goes through a PR with a green `build` check, merged by squash or rebase.
 2. Make the change in `Sidecar/` or `Trainer/`. Keep aircraft names, ids and phrases out of the code: anything aircraft-specific comes from the grammar, the phrase file or a command-line argument.
 3. Format: `dotnet csharpier format .`
 4. Build: `./Scripts/build.ps1`
@@ -40,7 +40,7 @@ dotnet tool restore            # csharpier, the C# formatter
 ## Releasing a new engine version
 
 1. Merge the changes to `main`.
-2. Add a section for the new version at the top of `CHANGELOG.md`, one line per change, from the app developer's point of view. Commit it to `main`.
+2. Add a section for the new version at the top of `CHANGELOG.md`, one line per change, from the app developer's point of view, and merge it through a PR like any other change.
 3. Tag and push:
    ```powershell
    git switch main
