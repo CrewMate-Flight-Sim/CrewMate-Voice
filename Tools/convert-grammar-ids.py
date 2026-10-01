@@ -2,7 +2,7 @@
 
 Reads the id -> name table from that aircraft's old CommandDispatcher.cs (the `DiscreteNames` dictionary), rewrites
 every out.pid="N" in <rule id="DISCRETE_COMMANDS"> to out.pid="<name>", and moves items whose name has no handler in
-the app's discreteCommandMap into a new CHECKLIST_RESPONSES rule (routed as DISCRETE_COMMANDS, so the JSON is
+the app's DISCRETE_COMMAND_MAP (or discreteCommandMap) into a new CHECKLIST_RESPONSES rule (routed as DISCRETE_COMMANDS, so the JSON is
 unchanged). It asserts that every phrase keeps its old name and that no other rule changed.
 
 Usage (from the aircraft repo root, before deleting CopilotSpeechNew/):
@@ -36,7 +36,8 @@ table_src = table_src[: table_src.index("};")]
 table = {int(a): b for a, b in re.findall(r'\[(\d+)\]\s*=\s*"(\w+)"', table_src)}
 
 ts = (root / args.ts).read_text(encoding="utf-8")
-start = re.search(r"(export )?const discreteCommandMap", ts).start()
+# Apps renamed it to DISCRETE_COMMAND_MAP in 2026-10; older copies still use discreteCommandMap
+start = re.search(r"(export )?const (DISCRETE_COMMAND_MAP|discreteCommandMap)", ts).start()
 blk = ts[start: ts.index("\n}\n", start)]
 handled = set(re.findall(r"^  (\w+):", blk, re.M))
 keep = set(args.keep_as_command)
