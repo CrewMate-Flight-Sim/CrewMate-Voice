@@ -91,7 +91,7 @@ A numeric `CmdId` from `DISCRETE_COMMANDS` means an old grammar that still used 
 | 19, 20 | `minimums` | feet; baro (19) or radio (20) |
 | 21 | `runway` | `identifier\|designator`, e.g. `09\|L` |
 
-For `heading`, `altitude` and `speed`, the payload also carries `verb` (`set`, `pull` or `manage`, taken from the spoken words) and `text` is normalised (e.g. `pull heading 270`).
+For `heading`, `altitude` and `speed`, the payload also carries `verb` (`set`, `pull`, `manage` or `select`, taken from the spoken words) and `text` is normalised (e.g. `pull heading 270`, `select heading 270`). `select` was added in 1.1.0; a grammar that never says it gets the same output as on 1.0.0.
 
 ## Trainer contract
 

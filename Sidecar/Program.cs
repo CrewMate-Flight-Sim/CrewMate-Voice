@@ -233,10 +233,11 @@ Thread.Sleep(Timeout.Infinite);
 static void EmitSpeech(VoiceCommand command, float confidence)
 {
     var raw = command.Raw;
-    // Detect pull vs set from the raw spoken text
+    // Detect the verb from the raw spoken text; "select" is the MD-11 knob pull, no A350 phrase says it
     string verb =
         raw.Contains("pull", StringComparison.OrdinalIgnoreCase) ? "pull"
         : raw.Contains("manage", StringComparison.OrdinalIgnoreCase) ? "manage"
+        : raw.Contains("select", StringComparison.OrdinalIgnoreCase) ? "select"
         : "set";
 
     // Reconstruct normalized text with correct verb so checklistRunner.ts still works
