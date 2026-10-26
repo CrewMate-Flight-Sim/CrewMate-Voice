@@ -115,9 +115,19 @@ else
     }
 }
 
-var srgs = new SrgsDocument(System.Xml.XmlReader.Create(File.OpenRead(GRAMMAR_FILE)));
-var grammar = new Grammar(srgs);
-engine.LoadGrammar(grammar);
+try
+{
+    using var reader = System.Xml.XmlReader.Create(GRAMMAR_FILE);
+    var srgs = new SrgsDocument(reader);
+    // Grammars ship as en-US; SAPI refuses them on an en-GB/en-AU/en-IN recognizer unless the cultures match
+    srgs.Culture = recognizerInfo.Culture;
+    engine.LoadGrammar(new Grammar(srgs));
+}
+catch (Exception ex)
+{
+    EmitError($"Failed to load grammar for {recognizerInfo.Culture.Name}: {ex.Message}");
+    Environment.Exit(1);
+}
 
 // ─── Event handlers ───────────────────────────────────────────────────────────
 
