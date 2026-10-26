@@ -117,7 +117,9 @@ else
 
 try
 {
-    using var reader = System.Xml.XmlReader.Create(GRAMMAR_FILE);
+    // A stream, not the path: XmlReader parses a path as a URI and rejects the \\?\ prefix Tauri passes
+    using var stream = File.OpenRead(GRAMMAR_FILE);
+    using var reader = System.Xml.XmlReader.Create(stream);
     var srgs = new SrgsDocument(reader);
     // Grammars ship as en-US; SAPI refuses them on an en-GB/en-AU/en-IN recognizer unless the cultures match
     srgs.Culture = recognizerInfo.Culture;
